@@ -4,7 +4,7 @@ Elixir [ExUnit Formatter](https://hexdocs.pm/ex_unit/1.12.3/ExUnit.Formatter.htm
 
 Използване:
 ```elixir
-➜ MIX_ENV=test MAX_POINTS=15 mix test --formatter TestCheckFormatter
+➜ mix test --formatter TestCheckFormatter
 Compiling 1 file (.ex)
 
 Failed tests:
@@ -19,3 +19,9 @@ Report:
 
   Points assigned: 13.95
 ```
+
+Тест файлът трябва да има няколко тага:
+- `@moduletag max_points: <number>` в началото на тест модула;
+- `@tag task: <task>` над всеки тест. Няколко теста могат да имат
+   едно име. Ако поне един от тези тестове "гръмне", то задачата
+   <task> се счита за грешна.
