@@ -4,10 +4,9 @@ defmodule TestCheckFormatter do
 
   ## Callbacks
 
-  def init(_) do
+  def init(hehe) do
     {:ok,
      %{
-       max_points: get_max_points_from_env(),
        fail_tasks: [],
        success_tasks: [],
        fail_tests: []
@@ -19,6 +18,18 @@ defmodule TestCheckFormatter do
       nil -> 15
       max_points -> String.to_integer(max_points)
     end
+  end
+
+  def handle_cast({:module_started, test_module}, state) do
+    # Max points will be set as a moduletag attribute in the test module
+    # `@moduletag max_points: 15`
+    max_points =
+      case test_module.tests do
+        [] -> get_max_points_from_env()
+        [test | _] -> test.tags.max_points
+      end
+
+    {:noreply, Map.put(state, :max_points, max_points)}
   end
 
   def handle_cast({_, %{tags: %{test_type: :doctest}}}, state) do
@@ -55,7 +66,7 @@ defmodule TestCheckFormatter do
     {:noreply, state}
   end
 
-  def handle_cast({:suite_finished, _times_us}, state) do
+  def handle_cast({:module_finished, _times_us}, state) do
     print_suite(state)
     {:noreply, state}
   end
