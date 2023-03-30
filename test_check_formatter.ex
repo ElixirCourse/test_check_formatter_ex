@@ -4,13 +4,21 @@ defmodule TestCheckFormatter do
 
   ## Callbacks
 
-  def init(_opts) do
+  def init(_) do
     {:ok,
      %{
+       max_points: get_max_points_from_env(),
        fail_tasks: [],
        success_tasks: [],
        fail_tests: []
      }}
+  end
+
+  defp get_max_points_from_env() do
+    case System.get_env("MAX_POINTS") do
+      nil -> 15
+      max_points -> String.to_integer(max_points)
+    end
   end
 
   def handle_cast({_, %{tags: %{test_type: :doctest}}}, state) do
@@ -57,7 +65,7 @@ defmodule TestCheckFormatter do
   end
 
   defp print_suite(state) do
-    max_points = 15
+    max_points = state.max_points
 
     total_success_tasks =
       (Enum.uniq(state.success_tasks) -- Enum.uniq(state.fail_tasks)) |> length()
